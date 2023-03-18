@@ -20,9 +20,11 @@ export const Leaves = () => {
   // // console.log("email",email);
   const [employeeData, setEmployeeData] = useState([]);
   const [leaveData, setLeaveData] = useState([]);
-
   const [loader, setLoader] = useState(false);
-
+  let empIds;
+  let emply;
+  let remleave;
+  let count;
   // const [empUser,setEmpUser]=useState("");
   const callHistoryPage = async () => {
     try {
@@ -60,7 +62,7 @@ export const Leaves = () => {
       });
 
       const data = await res.json();
-      console.log(data);
+      console.log(JSON.stringify(data), "format");
       setEmployeeData(data);
       if (!res.status === 200) {
         const error = new Error(res.err);
@@ -72,10 +74,28 @@ export const Leaves = () => {
     }
   };
 
+  if (leaveData) {
+    empIds = leaveData.map((leave) => leave.empId);
+  }
+
+  if (employeeData) {
+    emply = employeeData
+      .filter((emp) => empIds.includes(emp.empId))
+      .map((emp) => emp.leaveNum);
+  }
+  const maxTakenLeave = leaveData.length;
+
+  remleave = emply[0] - maxTakenLeave;
+  count = leaveData.filter((leave) => leave.status === 1).length;
+
+  console.log(empIds[0]);
+  console.log(emply[0]);
+
   useEffect(() => {
     callHistoryPage();
     fetchEmpDetails();
   }, []);
+
   return (
     <>
       <EmpNav empData={leaveData} />
@@ -95,7 +115,7 @@ export const Leaves = () => {
                 }}
               >
                 Total Leaves
-                <Button variant="outline-info">{20}</Button>{" "}
+                <Button variant="outline-info">{emply[0]}</Button>{" "}
               </div>
               <div
                 style={{
@@ -106,7 +126,7 @@ export const Leaves = () => {
               >
                 {" "}
                 Remaning Leaves
-                <Button variant="outline-info">{1}</Button>{" "}
+                <Button variant="outline-info">{remleave}</Button>{" "}
               </div>
               <div
                 style={{
@@ -117,7 +137,7 @@ export const Leaves = () => {
               >
                 {" "}
                 Approved Leaves
-                <Button variant="outline-info">4</Button>{" "}
+                <Button variant="outline-info">{count}</Button>{" "}
               </div>
             </div>
           </div>
@@ -468,9 +488,10 @@ export const LeaveHistory = () => {
   const [employeeData, setEmployeeData] = useState([]);
   const [leaveData, setLeaveData] = useState([]);
   const [loader, setLoader] = useState(false);
- 
-
-  
+  let empIds;
+  let emply;
+  let remleave;
+  let count;
   // const [empUser,setEmpUser]=useState("");
   const callHistoryPage = async () => {
     try {
@@ -483,14 +504,33 @@ export const LeaveHistory = () => {
       });
 
       const data = await res.json();
+      console.log(data);
       setLeaveData(data);
-      
-      //  if(leaveData){
-      //   setempno(leaveData[0].empId)
-      //  }
-     
       setLoader(true);
       console.log();
+      // setEmpUser(data.empId);
+      if (!res.status === 200) {
+        const error = new Error(res.err);
+        throw error;
+      }
+    } catch (err) {
+      console.log(err);
+      // navigate("/Login");
+    }
+  };
+  const fetchEmpDetails = async () => {
+    try {
+      const res = await fetch("/getEmpDetail", {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      });
+
+      const data = await res.json();
+      console.log(JSON.stringify(data), "format");
+      setEmployeeData(data);
       if (!res.status === 200) {
         const error = new Error(res.err);
         throw error;
@@ -501,14 +541,27 @@ export const LeaveHistory = () => {
     }
   };
 
+  if (leaveData) {
+    empIds = leaveData.map((leave) => leave.empId);
+  }
 
+  if (employeeData) {
+    emply = employeeData
+      .filter((emp) => empIds.includes(emp.empId))
+      .map((emp) => emp.leaveNum);
+  }
+  const maxTakenLeave = leaveData.length;
 
-  
+  remleave = emply[0] - maxTakenLeave;
+  count = leaveData.filter((leave) => leave.status === 1).length;
+
+  console.log(empIds[0]);
+  console.log(emply[0]);
 
   useEffect(() => {
     callHistoryPage();
+    fetchEmpDetails();
   }, []);
-
 
   return (
     <>
@@ -529,7 +582,7 @@ export const LeaveHistory = () => {
                 }}
               >
                 Total Leaves
-                <Button variant="outline-info">{20}</Button>{" "}
+                <Button variant="outline-info">{emply[0]}</Button>{" "}
               </div>
               <div
                 style={{
@@ -540,7 +593,7 @@ export const LeaveHistory = () => {
               >
                 {" "}
                 Remaning Leaves
-                <Button variant="outline-info">{1}</Button>{" "}
+                <Button variant="outline-info">{remleave}</Button>{" "}
               </div>
               <div
                 style={{
@@ -551,7 +604,7 @@ export const LeaveHistory = () => {
               >
                 {" "}
                 Approved Leaves
-                <Button variant="outline-info">4</Button>{" "}
+                <Button variant="outline-info">{count}</Button>{" "}
               </div>
             </div>
           </div>
@@ -619,6 +672,7 @@ export const LeaveHistory = () => {
                             }
                           })()}
                         </td>
+
                         <td>
                           {(() => {
                             if (leaves.status === 1) {

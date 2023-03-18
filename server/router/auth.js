@@ -340,15 +340,6 @@ router.get("/getEmpDetail", (req, res) => {
   });
 });
 
-router.post("/getSingleEmpDetail", (req, res) => {
-  console.log("emponsoedf",req.empno);
-  // Employee.find().then((result) => {
-  //   console.log("Employee detail", result);
-  //   res.send(result.length > 0 ? result : "Empty employee detail");
-  // });
-});
-
-
 // getemployeData get  employee data for update
 router.post("/getemployeedata", async (req, res) => {
   const { empId } = req.body;
